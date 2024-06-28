@@ -5,6 +5,8 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <WiFi.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 32 // OLED display height, in pixels
@@ -115,7 +117,7 @@ void loop()
       // temp += "<span id='difLat";
       // temp += i;
       // temp +="'>loading...</span>";
-      // temp += difLat;
+      temp += difLat;
       temp += "</td>";
       temp += "<td>";
       // temp += "<span id='difLng";
@@ -160,8 +162,8 @@ void loop()
     client.flush();
     // Menyusun halaman web yang akan ditampilkan
     String s = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>\r\n<html>\r\n";
-    s+="<head><meta http-equiv=\"refresh\" content=\"30\"></head>\r\n";
-    s+="<table style=\"width:100%\"><tr><th>Lokasi</th><th>Latitude</th><th>Longitude</th></tr><tr>\r\n";
+    s+="<head><meta http-equiv=\"refresh\" content=\"5\"></head>\r\n";
+    s+="<table><tr><th>Lokasi</th><th>Latitude</th><th>Longitude</th></tr><tr>\r\n";
     s+=temp;
     s+="</table>\r\n";
     // Mengirimkan halaman web ke client
