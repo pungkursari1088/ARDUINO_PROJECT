@@ -9,3 +9,6 @@ version
 1.2
 - ESP32 membuat visual antarmuka secara website yang bisa dilihat menggunakan browser android untuk melihat kecocokan koordinat GPS dengan koordinat KRL  
 - 
+
+FUTURE
+- bisa mengetahui next station
