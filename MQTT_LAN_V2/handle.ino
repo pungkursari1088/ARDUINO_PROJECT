@@ -26,14 +26,10 @@
 //   ESP.restart();
 // }
 
-void handleHTML(){
-  server.send(200, "text/html",index_html);
-  ESP.restart();
-}
 
 String processor(const String& var){
   //Serial.println(var);
-  if(var == "BUTTONPLACEHOLDER"){
+  if(var == "DOOR"){
     String buttons = "";
   //   buttons += "<h4>Output - GPIO 32</h4><label class=\"switch\"><input type=\"checkbox\" onchange=\"toggleCheckbox(this)\" id=\"32\" " + outputState(DO[0]) + "><span class=\"slider\"></span></label>";
 
@@ -42,7 +38,12 @@ String processor(const String& var){
   //   buttons += "<h4>Output - GPIO 25</h4><label class=\"switch\"><input type=\"checkbox\" onchange=\"toggleCheckbox(this)\" id=\"25\" " + outputState(DO[2]) + "><span class=\"slider\"></span></label>";
 
   //  buttons += "<h4>Output - GPIO 26</h4><label class=\"switch\"><input type=\"checkbox\" onchange=\"toggleCheckbox(this)\" id=\"26\" " + outputState(DO[3]) + "><span class=\"slider\"></span></label>";
-    buttons += "<h2>Output - GPIO 32 - " + outputState(DO[0])+"</h2>";
+    if(lampOn){
+      buttons += "TERBUKA";
+    } else {
+      buttons += "TERTUTUP";
+    }
+    
     return buttons;
   }
   return String();

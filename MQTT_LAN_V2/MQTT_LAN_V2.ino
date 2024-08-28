@@ -19,6 +19,7 @@ const int outputD2 = 33;
 const int outputD3 = 25;
 const int outputD4 = 26;
 int DO[4] = {32,33,25,26};
+bool lampOn = false;
 
 const char* input_parameter1 = "output";
 const char* input_parameter2 = "state";
@@ -97,10 +98,26 @@ const char index_html[] PROGMEM = R"rawliteral(
   </style>
 </head>
 <body>
-  <h2>ESP32 WEB SERVER</h2>
-  %BUTTONPLACEHOLDER%
-  <button class="off" onclick="controlOutput('off1')">Output 1 OFF</button>
+  <h2>KAMAR HOTEL</h2>
+  <h2 id="condDoor">%DOOR%</h2><br>
+  <button class="off" onclick="controlOutput('off1')">BUKA PINTU</button>
 <script>
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        var inputState;
+        if(this.responseText==0){    
+          inputState= "PINTU TERBUKA";
+        } else{
+          inputState= "PINTU TERTUTUP";
+        }
+        document.getElementById("condDoor").innerHTML = inputState;
+      }
+    };
+    xhttp.open("GET", "/condDoor", true);
+    xhttp.send();
+  }, 1000 ) ;
   function controlOutput(input) {
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
@@ -182,13 +199,10 @@ void setup() {
     if (request->hasParam(input_parameter1)){
       inputMessage1 = request->getParam(input_parameter1)->value();
       if(inputMessage1=="off1"){
+        lampOn=true;
         digitalWrite(DO[0],LOW);
-        Serial.println("DO 1 OFF");
-        if(currentMillis - previousMillis2 >=interval2){
-          digitalWrite(DO[0],HIGH);
-          Serial.println("DO 1 ON");
-          previousMillis2 = currentTime;
-        }
+        Serial.println("PINTU TERBUKA");
+        previousMillis2=millis();
       }
     }
     else {
@@ -196,6 +210,11 @@ void setup() {
     }
     request->send(200, "text/plain", "OK");
   });
+
+  server.on("/condDoor", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/plain", String(digitalRead(DO[0])).c_str());
+  });
+
   // // Send a GET request to <ESP_IP>/update?output=<inputMessage1>&state=<inputMessage2>
   // server.on("/update", HTTP_GET, [] (AsyncWebServerRequest *request) {
   //   String inputMessage1;
@@ -223,4 +242,10 @@ void setup() {
 void loop() {
   // Handle client requests
   server.begin();
+  //Pintu menutup kembali setelah 5 detik
+  if (lampOn && millis() - previousMillis2 >= interval2) {
+    Serial.println("PINTU TERTUTUP KEMBALI");
+    digitalWrite(DO[0], HIGH);  // Matikan lampu
+    lampOn = false;
+  }
 }
